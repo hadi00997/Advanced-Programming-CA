@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Cart - E-Commerce App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-light">
+
+    <div id="navbar"></div>
+
+    <div class="container py-5">
+        <h2>Your Cart</h2>
+        <div class="d-flex justify-content-between my-3">
+            <button class="btn btn-outline-danger btn-sm" onclick="clearCart()">Clear Cart</button>
+            <button class="btn btn-success btn-sm" onclick="checkout()">Checkout</button>
+        </div>
+
+        <div id="cartItems" class="mt-4"></div>
+        <div id="totalSection" class="mt-3 fw-bold"></div>
+    </div>
+
+    <script src="./js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            renderCart();
+        });
+
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartItemsDiv = document.getElementById('cartItems');
+            const totalSection = document.getElementById('totalSection');
+            cartItemsDiv.innerHTML = '';
+
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p class="text-danger">Your cart is empty.</p>';
+                totalSection.innerHTML = '';
+                return;
+            }
+
+            let total = 0;
+            cart.forEach((item, index) => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+
+                const row = document.createElement('div');
+                row.className = 'card mb-3 p-3';
+                row.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h5>${item.name}</h5>
+                        <p class="text-muted">Price: $${item.price}</p>
+                        <p class="text-muted">Quantity:
+                          <span class="mx-2">${item.quantity}</span>
+                        </p>
+                        <p class="text-muted">Subtotal: $${subtotal.toFixed(2)}</p>
+                      </div>
+                      <div>
+                        <button class="btn btn-danger btn-sm me-2" onclick="removeCartItem(${item.id})">Remove</button>
+                        <button class="btn btn-primary btn-sm" onclick="orderItem(${item.id})">Order</button>
+                      </div>
+                    </div>
+                  `;
+                cartItemsDiv.appendChild(row);
+            });
+
+            totalSection.innerHTML = `Total: $${total.toFixed(2)}`;
+        }
+
+        function clearCart() {
+            removeAllItemsFromcart()
+        }
+
+        function checkout() {
+            window.location.href = "./payment.html"
+        }
+
+        function orderItem(id) {
+            alert(`Order placed for item ID: ${id}`);
+        }
+    </script>
+</body>
+
+</html>
